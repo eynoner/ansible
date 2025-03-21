@@ -1,0 +1,18 @@
+---
+
+- hosts: all
+  become: true
+  tasks:
+  - name: Disable httpd
+    service:
+      name: httpd
+      state: stopped
+      enabled: no
+  - name: Remove httpd package
+    dnf:
+      name: httpd
+      state: absent 
+  - name: Remove php support for apache
+    dnf:
+      name: php
+      state: absent
