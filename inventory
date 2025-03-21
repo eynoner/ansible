@@ -1,3 +1,7 @@
-192.168.1.147
+[all]
+192.168.1.147 
 192.168.1.163
 192.168.1.180
+[all:vars]
+ansible_user=yanredhat
+ansible_python_interpreter=/usr/libexec/platform-python
