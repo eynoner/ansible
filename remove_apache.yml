@@ -8,11 +8,10 @@
       name: httpd
       state: stopped
       enabled: no
-  - name: Remove httpd package
-    dnf:
-      name: httpd
+  - name: Remove httpd and php package
+    package:
+      name: 
+        - httpd
+        - php
       state: absent 
-  - name: Remove php support for apache
-    dnf:
-      name: php
-      state: absent
+
