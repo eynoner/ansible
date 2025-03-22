@@ -4,19 +4,29 @@
   become: true
   pre_tasks:
 
-  - name: Install updates (RedHat)
+  - name: Update repo cache (RedHat)
     tags: always
     dnf:
-      update_only: yes
       update_cache: yes
+    changed_when: false
     when: ansible_distribution == "RedHat"
   
-  - name: Install updates (Ubuntu)
+  - name: Update repo cache (Ubuntu)
     tags: always
     apt:
-      upgrade: dist
       update_cache: yes
+    changed_when: false
     when: ansible_distribution == "Ubuntu"
+
+- hosts: all 
+  become: true
+  tasks:
+
+  - name: add ssh key for simone
+    tags: always
+    authorized_key:
+      user: simone
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHMh3O3zRVYuMqAQkTG7Ky9pngc4FawR5eCxGLW5YKV+ ansible_key"
 
 - hosts: web_servers
   become: true
@@ -47,6 +57,22 @@
       state: started
       enabled: yes
     when: ansible_distribution == "RedHat"
+  
+  - name: Change e-mail address for admin
+    tags: apache,redhat,httpd
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^ServerAdmin'
+      line: ServerAdmin somebody@somwhere.net
+    when: ansible_distribution == "RedHat"
+    register: httpd
+
+  - name: restart httpd (RedHat)
+    tags: apache,redhat,httpd
+    service:
+      name: httpd
+      state: restarted
+    when: httpd.changed
 
   - name: copy default html file for site
     tags: apache,apache2,httpd
@@ -92,3 +118,20 @@
     package:
       name: samba
       state: latest
+
+- hosts: workstations
+  become: true
+  tasks:
+
+    - name: Install unzip
+      package:
+        name: unzip
+
+    - name: Install terraform
+      unarchive: 
+        src: https://releases.hashicorp.com/terraform/1.11.2/terraform_1.11.2_linux_amd64.zip
+        dest: /usr/local/bin
+        remote_src: yes
+        mode: 0755
+        owner: root
+        group: root
