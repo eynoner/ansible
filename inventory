@@ -1,5 +1,5 @@
 [web_servers]
-192.168.1.116 ansible_python_interpreter=/usr/bin/python3
+192.168.1.116 
 192.168.1.147
 [file_servers]
 192.168.1.163
@@ -11,4 +11,3 @@
 
 
 [all:vars]
-ansible_python_interpreter=/usr/libexec/platform-python
